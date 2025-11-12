@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Universal Document Viewer - Example</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .description {
+      color: #666;
+      margin-bottom: 30px;
+    }
+
+    .controls {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .controls button {
+      padding: 10px 20px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .controls button:hover {
+      background: #2980b9;
+    }
+
+    #viewer-container {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .info {
+      margin-top: 20px;
+      padding: 15px;
+      background: #e8f4f8;
+      border-left: 4px solid #3498db;
+      border-radius: 4px;
+    }
+
+    .info p {
+      margin: 5px 0;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Universal Document Viewer</h1>
+    <p class="description">
+      A framework-agnostic library for viewing PDF, Office documents, images, and text files.
+    </p>
+
+    <div class="controls">
+      <button onclick="loadPDF()">Load PDF</button>
+      <button onclick="loadImage()">Load Image</button>
+      <button onclick="loadText()">Load Text</button>
+      <button onclick="loadExcel()">Load Excel (Online)</button>
+      <button onclick="loadWord()">Load Word (Online)</button>
+      <button onclick="loadPowerPoint()">Load PowerPoint (Online)</button>
+    </div>
+
+    <div id="viewer-container"></div>
+
+    <div class="info">
+      <p><strong>Current Document:</strong> <span id="current-doc">None</span></p>
+      <p><strong>Document Type:</strong> <span id="doc-type">-</span></p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { DocumentViewer } from './dist/index.esm.js';
+
+    let viewer = null;
+
+    // Sample document URLs (you'll need to replace these with actual URLs)
+    const documents = {
+      pdf: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+      image: 'https://via.placeholder.com/800x600.png',
+      text: 'https://www.w3.org/TR/PNG/iso_8859-1.txt',
+      excel: 'https://calibre-ebook.com/downloads/demos/demo.xlsx',
+      word: 'https://calibre-ebook.com/downloads/demos/demo.docx',
+      powerpoint: 'https://scholar.harvard.edu/files/torman_personal/files/samplepptx.pptx'
+    };
+
+    function updateInfo(name, type) {
+      document.getElementById('current-doc').textContent = name;
+      document.getElementById('doc-type').textContent = type;
+    }
+
+    async function loadDocument(url, name, type) {
+      try {
+        if (viewer) {
+          await viewer.changeDocument(url, type);
+        } else {
+          viewer = new DocumentViewer({
+            container: '#viewer-container',
+            url: url,
+            type: type,
+            height: '600px',
+            onLoad: () => {
+              console.log('Document loaded successfully');
+              updateInfo(name, viewer.getDocumentType());
+            },
+            onError: (error) => {
+              console.error('Error loading document:', error);
+              alert('Failed to load document: ' + error.message);
+            }
+          });
+          await viewer.render();
+        }
+        updateInfo(name, type);
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to load document: ' + error.message);
+      }
+    }
+
+    // Expose functions globally
+    window.loadPDF = () => loadDocument(documents.pdf, 'Sample PDF', 'pdf');
+    window.loadImage = () => loadDocument(documents.image, 'Sample Image', 'png');
+    window.loadText = () => loadDocument(documents.text, 'Sample Text File', 'txt');
+    window.loadExcel = () => loadDocument(documents.excel, 'Sample Excel File', 'xlsx');
+    window.loadWord = () => loadDocument(documents.word, 'Sample Word Document', 'docx');
+    window.loadPowerPoint = () => loadDocument(documents.powerpoint, 'Sample PowerPoint', 'pptx');
+
+    // Load a default document on page load
+    loadPDF();
+  </script>
+</body>
+</html>

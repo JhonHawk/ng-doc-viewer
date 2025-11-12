@@ -1,0 +1,42 @@
+{
+  "name": "universal-doc-viewer",
+  "version": "1.0.0",
+  "description": "A framework-agnostic document viewer library for JavaScript and TypeScript supporting PDF, Office documents, images, and text files",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "test": "jest",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "document-viewer",
+    "pdf-viewer",
+    "office-viewer",
+    "image-viewer",
+    "universal",
+    "framework-agnostic",
+    "typescript",
+    "javascript"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "@types/jest": "^29.5.11",
+    "jest": "^29.7.0",
+    "rollup": "^4.9.6",
+    "tslib": "^2.6.2",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "pdfjs-dist": "^3.11.174"
+  }
+}
