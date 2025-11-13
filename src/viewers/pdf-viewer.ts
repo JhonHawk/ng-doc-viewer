@@ -60,23 +60,47 @@ export class PDFViewer implements IViewer {
   }
 
   private async loadPdfJs(): Promise<any> {
-    // Check if PDF.js is already loaded
-    if ((window as any).pdfjsLib) {
+    // Check if PDF.js is already loaded globally
+    if (typeof window !== 'undefined' && (window as any).pdfjsLib) {
       return (window as any).pdfjsLib;
     }
 
-    // Try to load from npm package first (for bundled environments)
+    // In browser environment, load from CDN directly
+    if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+      // Try to import from npm package (only works in bundled environments)
+      // Use a try-catch with timeout to avoid hanging
+      const importTimeout = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Import timeout')), 100);
+      });
+
+      try {
+        const pdfjsLib = await Promise.race([
+          import('pdfjs-dist').catch(() => null),
+          importTimeout
+        ]);
+
+        if (pdfjsLib && (pdfjsLib as any).getDocument) {
+          // Successfully loaded from npm package
+          const workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+          (pdfjsLib as any).GlobalWorkerOptions.workerSrc = workerSrc;
+          return pdfjsLib;
+        }
+      } catch (e) {
+        // Import failed, will fall through to CDN loading
+      }
+
+      // Fall back to CDN for browser environments
+      return this.loadPdfJsFromCDN();
+    }
+
+    // For Node.js or non-browser environments, try npm package
     try {
       const pdfjsLib = await import('pdfjs-dist');
-
-      // Set worker source
       const workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
       pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc;
-
       return pdfjsLib;
-    } catch (importError) {
-      // Fall back to loading from CDN (for browser environments)
-      return this.loadPdfJsFromCDN();
+    } catch (error) {
+      throw new Error('Failed to load PDF.js library. Please install pdfjs-dist or use in a browser environment.');
     }
   }
 

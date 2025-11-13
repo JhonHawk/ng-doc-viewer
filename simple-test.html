@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Test</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    h1 { margin-bottom: 20px; }
+    button { margin: 5px; padding: 10px 20px; cursor: pointer; }
+    #viewer {
+      width: 100%;
+      height: 600px;
+      border: 2px solid #333;
+      margin: 20px 0;
+    }
+    #log {
+      background: #000;
+      color: #0f0;
+      padding: 10px;
+      font-family: monospace;
+      font-size: 12px;
+      height: 200px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Simple Universal Doc Viewer Test</h1>
+
+  <div>
+    <button onclick="loadImage()">Load Image</button>
+    <button onclick="loadText()">Load Text</button>
+    <button onclick="loadPDF()">Load PDF</button>
+  </div>
+
+  <div id="viewer"></div>
+
+  <h3>Console Log:</h3>
+  <div id="log"></div>
+
+  <script type="module">
+    const logEl = document.getElementById('log');
+
+    function log(msg, type = 'info') {
+      console.log(msg);
+      const line = document.createElement('div');
+      line.textContent = `[${type.toUpperCase()}] ${msg}`;
+      if (type === 'error') line.style.color = '#f00';
+      if (type === 'success') line.style.color = '#0f0';
+      logEl.appendChild(line);
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    log('Starting test...');
+
+    let DocumentViewer;
+    try {
+      const module = await import('./dist/index.esm.js');
+      DocumentViewer = module.DocumentViewer;
+      log('✓ Module loaded', 'success');
+      log('Exports: ' + Object.keys(module).join(', '));
+    } catch (err) {
+      log('✗ Import failed: ' + err.message, 'error');
+      throw err;
+    }
+
+    let viewer = null;
+
+    async function createViewer(url, type) {
+      log(`Creating viewer for ${type}...`);
+
+      try {
+        if (viewer) {
+          log('Destroying old viewer...');
+          viewer.destroy();
+        }
+
+        viewer = new DocumentViewer({
+          container: '#viewer',
+          url: url,
+          type: type,
+          onLoad: () => {
+            log(`✓ ${type} loaded!`, 'success');
+          },
+          onError: (err) => {
+            log(`✗ ${type} error: ${err.message}`, 'error');
+          }
+        });
+
+        log('Calling render()...');
+        await viewer.render();
+        log('Render completed');
+
+      } catch (err) {
+        log('✗ Exception: ' + err.message, 'error');
+        log('Stack: ' + err.stack, 'error');
+      }
+    }
+
+    window.loadImage = () => {
+      log('=== LOADING IMAGE ===');
+      createViewer('https://via.placeholder.com/800x600.png?text=Test+Image', 'png');
+    };
+
+    window.loadText = () => {
+      log('=== LOADING TEXT ===');
+      createViewer('https://www.w3.org/TR/PNG/iso_8859-1.txt', 'txt');
+    };
+
+    window.loadPDF = () => {
+      log('=== LOADING PDF ===');
+      createViewer('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', 'pdf');
+    };
+
+    log('Ready! Click a button to test.');
+  </script>
+</body>
+</html>

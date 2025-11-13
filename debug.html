@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debug - Universal Document Viewer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .controls {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .controls button {
+      padding: 10px 20px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .controls button:hover {
+      background: #2980b9;
+    }
+
+    #viewer-container {
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      overflow: hidden;
+      min-height: 600px;
+    }
+
+    #console {
+      margin-top: 20px;
+      padding: 15px;
+      background: #2c3e50;
+      color: #ecf0f1;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .log-entry {
+      margin-bottom: 5px;
+      padding: 5px;
+      border-left: 3px solid #3498db;
+      padding-left: 10px;
+    }
+
+    .log-error {
+      border-left-color: #e74c3c;
+      color: #e74c3c;
+    }
+
+    .log-success {
+      border-left-color: #2ecc71;
+      color: #2ecc71;
+    }
+
+    .info {
+      margin-top: 20px;
+      padding: 15px;
+      background: #e8f4f8;
+      border-left: 4px solid #3498db;
+      border-radius: 4px;
+    }
+
+    .info p {
+      margin: 5px 0;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Debug - Universal Document Viewer</h1>
+    <p class="description">
+      Testing all document types with detailed logging
+    </p>
+
+    <div class="controls">
+      <button onclick="testImage()">Test Image</button>
+      <button onclick="testText()">Test Text</button>
+      <button onclick="testPDF()">Test PDF</button>
+      <button onclick="testExcel()">Test Excel</button>
+      <button onclick="clearViewer()">Clear</button>
+    </div>
+
+    <div id="viewer-container"></div>
+
+    <div class="info">
+      <p><strong>Current Document:</strong> <span id="current-doc">None</span></p>
+      <p><strong>Document Type:</strong> <span id="doc-type">-</span></p>
+      <p><strong>Status:</strong> <span id="status">Ready</span></p>
+    </div>
+
+    <div id="console"></div>
+  </div>
+
+  <script type="module">
+    // Console logging
+    const consoleEl = document.getElementById('console');
+
+    function log(message, type = 'info') {
+      console.log(message);
+      const entry = document.createElement('div');
+      entry.className = `log-entry log-${type}`;
+      entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+      consoleEl.appendChild(entry);
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+
+    // Import the library
+    log('Importing DocumentViewer library...');
+
+    let DocumentViewer;
+    try {
+      const module = await import('./dist/index.esm.js');
+      DocumentViewer = module.DocumentViewer;
+      log('✓ DocumentViewer imported successfully', 'success');
+      log('Available exports: ' + Object.keys(module).join(', '));
+    } catch (error) {
+      log('✗ Failed to import DocumentViewer: ' + error.message, 'error');
+      throw error;
+    }
+
+    let viewer = null;
+
+    function updateInfo(name, type) {
+      document.getElementById('current-doc').textContent = name;
+      document.getElementById('doc-type').textContent = type;
+    }
+
+    function updateStatus(status) {
+      document.getElementById('status').textContent = status;
+    }
+
+    async function loadDocument(url, name, type) {
+      log(`Attempting to load ${name} (${type})...`);
+      updateStatus('Loading...');
+
+      try {
+        // Destroy previous viewer
+        if (viewer) {
+          log('Destroying previous viewer...');
+          viewer.destroy();
+        }
+
+        log('Creating new DocumentViewer instance...');
+        viewer = new DocumentViewer({
+          container: '#viewer-container',
+          url: url,
+          type: type,
+          height: '600px',
+          onLoad: () => {
+            log(`✓ ${name} loaded successfully!`, 'success');
+            updateInfo(name, type);
+            updateStatus('Loaded');
+          },
+          onError: (error) => {
+            log(`✗ Error loading ${name}: ${error.message}`, 'error');
+            updateStatus('Error');
+          }
+        });
+
+        log('Calling viewer.render()...');
+        await viewer.render();
+        log('render() completed');
+
+      } catch (error) {
+        log(`✗ Exception: ${error.message}`, 'error');
+        log(`Stack: ${error.stack}`, 'error');
+        updateStatus('Error');
+      }
+    }
+
+    // Expose test functions globally
+    window.testImage = () => {
+      log('=== Testing Image ===');
+      loadDocument(
+        'https://via.placeholder.com/800x600.png?text=Test+Image',
+        'Test Image',
+        'png'
+      );
+    };
+
+    window.testText = () => {
+      log('=== Testing Text File ===');
+      loadDocument(
+        'https://www.w3.org/TR/PNG/iso_8859-1.txt',
+        'Sample Text File',
+        'txt'
+      );
+    };
+
+    window.testPDF = () => {
+      log('=== Testing PDF ===');
+      loadDocument(
+        'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+        'Sample PDF',
+        'pdf'
+      );
+    };
+
+    window.testExcel = () => {
+      log('=== Testing Excel (Office Viewer) ===');
+      loadDocument(
+        'https://file-examples.com/wp-content/storage/2017/02/file_example_XLS_10.xls',
+        'Sample Excel File',
+        'xls'
+      );
+    };
+
+    window.clearViewer = () => {
+      log('=== Clearing viewer ===');
+      if (viewer) {
+        viewer.destroy();
+        viewer = null;
+      }
+      document.getElementById('viewer-container').innerHTML = '';
+      updateInfo('None', '-');
+      updateStatus('Ready');
+    };
+
+    log('All functions initialized. Ready to test.');
+    log('Click a button above to test different document types.');
+  </script>
+</body>
+</html>
