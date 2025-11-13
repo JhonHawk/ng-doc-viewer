@@ -32,6 +32,28 @@ Or with yarn:
 yarn add universal-doc-viewer
 ```
 
+### Development / Local Testing
+
+If you're working with the source code:
+
+```bash
+# Clone the repository
+git clone <repository-url>
+cd ng-doc-viewer
+
+# Install dependencies
+npm install
+
+# Build the library (REQUIRED before testing)
+npm run build
+
+# Test with a local HTTP server
+python3 -m http.server 8000
+# Then open http://localhost:8000/simple-test.html
+```
+
+See [TESTING.md](./TESTING.md) for detailed testing instructions.
+
 ## Quick Start
 
 ### Vanilla JavaScript
