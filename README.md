@@ -419,9 +419,22 @@ Office documents (Excel, Word, PowerPoint) are displayed using online viewers:
 
 ### PDF Files
 PDF files are rendered using [PDF.js](https://mozilla.github.io/pdf.js/), which provides:
-- Client-side rendering (no external dependencies)
+- Client-side rendering
 - Page navigation controls
 - High-quality rendering
+
+**Loading Strategy:**
+The library automatically loads PDF.js in one of two ways:
+
+1. **Bundled environments** (Webpack, Rollup, etc.): If you're using a bundler, you can optionally install `pdfjs-dist` as a dependency:
+   ```bash
+   npm install pdfjs-dist
+   ```
+   The library will use the bundled version automatically.
+
+2. **Browser/CDN usage**: If `pdfjs-dist` is not installed or the import fails, the library automatically falls back to loading PDF.js from CDN (cdnjs.cloudflare.com). No additional configuration needed!
+
+This dual approach ensures the library works seamlessly in any environment, whether you're using it directly in the browser or with a build tool.
 
 ### CORS Considerations
 When loading documents from external URLs, ensure that CORS (Cross-Origin Resource Sharing) is properly configured on the server hosting the documents.

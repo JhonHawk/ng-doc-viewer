@@ -60,8 +60,13 @@ export class PDFViewer implements IViewer {
   }
 
   private async loadPdfJs(): Promise<any> {
+    // Check if PDF.js is already loaded
+    if ((window as any).pdfjsLib) {
+      return (window as any).pdfjsLib;
+    }
+
+    // Try to load from npm package first (for bundled environments)
     try {
-      // Try to load from npm package
       const pdfjsLib = await import('pdfjs-dist');
 
       // Set worker source
@@ -69,9 +74,56 @@ export class PDFViewer implements IViewer {
       pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc;
 
       return pdfjsLib;
-    } catch (error) {
-      throw new Error('Failed to load PDF.js library');
+    } catch (importError) {
+      // Fall back to loading from CDN (for browser environments)
+      return this.loadPdfJsFromCDN();
     }
+  }
+
+  private loadPdfJsFromCDN(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      // Check if already loaded
+      if ((window as any).pdfjsLib) {
+        resolve((window as any).pdfjsLib);
+        return;
+      }
+
+      // Check if script is already being loaded
+      const existingScript = document.querySelector('script[src*="pdf.js"]');
+      if (existingScript) {
+        existingScript.addEventListener('load', () => {
+          if ((window as any).pdfjsLib) {
+            resolve((window as any).pdfjsLib);
+          } else {
+            reject(new Error('PDF.js loaded but not available'));
+          }
+        });
+        return;
+      }
+
+      // Load PDF.js from CDN
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+      script.async = true;
+
+      script.onload = () => {
+        const pdfjsLib = (window as any).pdfjsLib;
+        if (pdfjsLib) {
+          // Set worker source
+          pdfjsLib.GlobalWorkerOptions.workerSrc =
+            'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+          resolve(pdfjsLib);
+        } else {
+          reject(new Error('PDF.js failed to load from CDN'));
+        }
+      };
+
+      script.onerror = () => {
+        reject(new Error('Failed to load PDF.js from CDN'));
+      };
+
+      document.head.appendChild(script);
+    });
   }
 
   private createControls(): void {
