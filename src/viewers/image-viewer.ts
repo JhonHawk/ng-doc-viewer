@@ -1,5 +1,6 @@
 import { ViewerOptions, IViewer } from '../types';
 import { createLoader, createErrorElement } from '../utils';
+import { fetchAsBlob, revokeBlobUrl, isCorsError } from '../blob-utils';
 
 /**
  * Image Viewer for PNG, JPG, JPEG files
@@ -8,6 +9,7 @@ export class ImageViewer implements IViewer {
   private container: HTMLElement;
   private options: ViewerOptions;
   private image: HTMLImageElement | null = null;
+  private blobUrl: string | null = null;
 
   constructor(container: HTMLElement, options: ViewerOptions) {
     this.container = container;
@@ -48,7 +50,31 @@ export class ImageViewer implements IViewer {
     }
   }
 
-  private loadImage(): Promise<void> {
+  private async loadImage(): Promise<void> {
+    if (!this.image) {
+      throw new Error('Image element not initialized');
+    }
+
+    try {
+      // First attempt: Direct URL loading
+      await this.loadImageDirect(this.options.url);
+    } catch (error) {
+      // Check if we should try blob fallback
+      const useBlobFallback = this.options.useBlobFallback !== false; // Default to true
+
+      if (useBlobFallback && (isCorsError(error as Error) || this.options.useBlobFallback === true)) {
+        // Fallback: Load as blob
+        console.log('Direct image loading failed, trying blob fallback...');
+        const result = await fetchAsBlob(this.options.url);
+        this.blobUrl = result.blobUrl;
+        await this.loadImageDirect(this.blobUrl);
+      } else {
+        throw error;
+      }
+    }
+  }
+
+  private loadImageDirect(url: string): Promise<void> {
     return new Promise((resolve, reject) => {
       if (!this.image) {
         reject(new Error('Image element not initialized'));
@@ -57,7 +83,7 @@ export class ImageViewer implements IViewer {
 
       this.image.onload = () => resolve();
       this.image.onerror = () => reject(new Error('Failed to load image'));
-      this.image.src = this.options.url;
+      this.image.src = url;
     });
   }
 
@@ -83,6 +109,11 @@ export class ImageViewer implements IViewer {
       this.image.onload = null;
       this.image.onerror = null;
       this.image = null;
+    }
+    // Clean up blob URL to prevent memory leaks
+    if (this.blobUrl) {
+      revokeBlobUrl(this.blobUrl);
+      this.blobUrl = null;
     }
     this.container.innerHTML = '';
   }

@@ -72,6 +72,13 @@ Prueba específica para PDFs:
 - Carga automática de un PDF
 - Verifica que PDF.js se cargue correctamente desde CDN
 
+### test-blob-fallback.html
+Prueba del mecanismo de fallback blob/memoria:
+- Prueba la carga normal vs forzar fallback a blob
+- Botones para PDF, imagen y texto
+- Console detallado mostrando el proceso de fallback
+- Útil para verificar que el fallback funciona correctamente con problemas de CORS
+
 ## Verificación de la Compilación
 
 Después de ejecutar `npm run build`, deberías tener:
@@ -117,10 +124,18 @@ new DocumentViewer({
 
 **Causa:** El documento está en un servidor que no permite CORS.
 
-**Solución:**
+**Solución Automática:**
+La librería ahora incluye un mecanismo de **fallback automático a blob/memoria** que se activa cuando detecta errores de CORS:
+- Para PDFs, imágenes y textos: descarga el archivo a memoria y lo renderiza desde ahí
+- Este fallback está **activado por defecto** y funciona automáticamente
+- Puedes probarlo con `test-blob-fallback.html`
+
+**Soluciones Manuales (si el fallback no funciona):**
 - Usa documentos de servidores que permitan CORS
 - Para PDFs locales en desarrollo, considera usar un proxy
 - Imágenes y textos: asegúrate que el servidor tenga CORS configurado
+
+**Nota:** El fallback blob NO funciona para documentos Office (Excel, Word, PowerPoint) porque estos usan visores de terceros (Google Docs o Microsoft Office Online) que necesitan acceder al archivo desde sus servidores.
 
 ## Ejemplos de Código para Probar
 

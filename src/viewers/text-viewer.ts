@@ -1,5 +1,6 @@
 import { ViewerOptions, IViewer } from '../types';
 import { createLoader, createErrorElement } from '../utils';
+import { fetchAsText, isCorsError } from '../blob-utils';
 
 /**
  * Text Viewer for TXT files
@@ -22,12 +23,27 @@ export class TextViewer implements IViewer {
         this.container.appendChild(loader);
       }
 
-      // Fetch text content
-      const response = await fetch(this.options.url);
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      let text: string;
+
+      try {
+        // First attempt: Direct fetch
+        const response = await fetch(this.options.url);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        text = await response.text();
+      } catch (error) {
+        // Check if we should try blob fallback
+        const useBlobFallback = this.options.useBlobFallback !== false; // Default to true
+
+        if (useBlobFallback && (isCorsError(error as Error) || this.options.useBlobFallback === true)) {
+          // Fallback: Use fetchAsText utility
+          console.log('Direct text loading failed, trying blob fallback...');
+          text = await fetchAsText(this.options.url);
+        } else {
+          throw error;
+        }
       }
-      const text = await response.text();
 
       // Create text element
       this.textElement = document.createElement('pre');

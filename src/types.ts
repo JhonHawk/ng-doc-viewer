@@ -77,6 +77,12 @@ export interface ViewerOptions {
    * Use Microsoft Office Online Viewer for Office documents (default: false)
    */
   useMicrosoftViewer?: boolean;
+
+  /**
+   * Use blob/memory fallback when direct URL loading fails (useful for CORS issues)
+   * (default: true)
+   */
+  useBlobFallback?: boolean;
 }
 
 /**

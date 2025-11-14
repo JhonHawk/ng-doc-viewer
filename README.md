@@ -283,6 +283,7 @@ interface ViewerOptions {
   loadingMessage?: string;           // Custom loading message
   useGoogleDocsViewer?: boolean;     // Use Google Docs for Office files (default: true)
   useMicrosoftViewer?: boolean;      // Use Microsoft viewer for Office files (default: false)
+  useBlobFallback?: boolean;         // Use blob/memory fallback for CORS issues (default: true)
   onLoad?: () => void;               // Success callback
   onError?: (error: Error) => void;  // Error callback
 }
@@ -458,8 +459,62 @@ The library automatically loads PDF.js in one of two ways:
 
 This dual approach ensures the library works seamlessly in any environment, whether you're using it directly in the browser or with a build tool.
 
-### CORS Considerations
-When loading documents from external URLs, ensure that CORS (Cross-Origin Resource Sharing) is properly configured on the server hosting the documents.
+### CORS Considerations and Blob Fallback
+
+When loading documents from external URLs, CORS (Cross-Origin Resource Sharing) restrictions may prevent direct loading. To handle this, the library includes an **automatic blob/memory fallback** feature.
+
+#### How Blob Fallback Works
+
+When direct URL loading fails (typically due to CORS errors), the library automatically:
+1. Downloads the file to browser memory using `fetch()`
+2. Creates a blob URL from the downloaded data
+3. Uses the blob URL to render the document
+
+This feature is **enabled by default** for PDFs, images, and text files. It works automatically without any configuration.
+
+#### Controlling Blob Fallback
+
+```javascript
+// Default behavior - blob fallback is automatic on CORS errors
+const viewer = new DocumentViewer({
+  container: '#viewer',
+  url: 'https://example.com/document.pdf'
+});
+
+// Explicitly enable blob fallback (force download to memory)
+const viewer2 = new DocumentViewer({
+  container: '#viewer',
+  url: 'https://example.com/document.pdf',
+  useBlobFallback: true  // Always use blob fallback
+});
+
+// Disable blob fallback (fail if direct loading doesn't work)
+const viewer3 = new DocumentViewer({
+  container: '#viewer',
+  url: 'https://example.com/document.pdf',
+  useBlobFallback: false  // Never use blob fallback
+});
+```
+
+#### Testing Blob Fallback
+
+Open `test-blob-fallback.html` in your browser to test the blob fallback functionality:
+
+```bash
+python3 -m http.server 8000
+# Open http://localhost:8000/test-blob-fallback.html
+```
+
+The test page includes buttons to:
+- Load documents normally (with automatic fallback)
+- Force blob fallback mode
+- View detailed console logs of the fallback process
+
+#### Important Notes
+
+- **Office Documents**: Blob fallback does NOT work for Office documents (Excel, Word, PowerPoint) because they use third-party viewers (Google Docs Viewer or Microsoft Office Online) which require the URL to be publicly accessible from their servers.
+- **Memory Usage**: When using blob fallback, the entire document is loaded into browser memory. For large files, this may consume significant memory.
+- **Browser Support**: Blob fallback uses standard browser APIs (`fetch`, `URL.createObjectURL`) and works in all modern browsers.
 
 ## License
 

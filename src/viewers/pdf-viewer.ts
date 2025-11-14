@@ -1,5 +1,6 @@
 import { ViewerOptions, IViewer } from '../types';
 import { createLoader, createErrorElement } from '../utils';
+import { fetchAsArrayBuffer, isCorsError } from '../blob-utils';
 
 /**
  * PDF Viewer implementation using PDF.js
@@ -28,9 +29,25 @@ export class PDFViewer implements IViewer {
       // Load PDF.js
       const pdfjsLib = await this.loadPdfJs();
 
-      // Load PDF document
-      const loadingTask = pdfjsLib.getDocument(this.options.url);
-      this.pdfDoc = await loadingTask.promise;
+      // Try to load PDF document
+      try {
+        // First attempt: Direct URL loading
+        const loadingTask = pdfjsLib.getDocument(this.options.url);
+        this.pdfDoc = await loadingTask.promise;
+      } catch (error) {
+        // Check if we should try blob fallback
+        const useBlobFallback = this.options.useBlobFallback !== false; // Default to true
+
+        if (useBlobFallback && (isCorsError(error as Error) || this.options.useBlobFallback === true)) {
+          // Fallback: Load as ArrayBuffer and use typed array
+          console.log('Direct PDF loading failed, trying blob fallback...');
+          const arrayBuffer = await fetchAsArrayBuffer(this.options.url);
+          const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+          this.pdfDoc = await loadingTask.promise;
+        } else {
+          throw error;
+        }
+      }
 
       // Clear container
       this.container.innerHTML = '';

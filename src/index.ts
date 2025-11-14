@@ -24,6 +24,16 @@ export {
   isOfficeDocument,
 } from './utils';
 
+export {
+  fetchAsBlob,
+  fetchAsArrayBuffer,
+  fetchAsText,
+  revokeBlobUrl,
+  isCorsError,
+} from './blob-utils';
+
+export type { FetchResult } from './blob-utils';
+
 /**
  * Quick start function to create and render a document viewer
  * @param options - Viewer configuration options
