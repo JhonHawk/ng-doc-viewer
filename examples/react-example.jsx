@@ -59,13 +59,13 @@ function DocumentViewerComponent({ url, type, height = '600px' }) {
 
 // Example App Component
 function App() {
-  const [documentUrl, setDocumentUrl] = useState('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+  const [documentUrl, setDocumentUrl] = useState('https://examplefile.com/document/pdf/sample1.pdf');
   const [documentType, setDocumentType] = useState('pdf');
 
   const documents = [
-    { name: 'Sample PDF', url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', type: 'pdf' },
-    { name: 'Sample Image', url: 'https://via.placeholder.com/800x600.png', type: 'png' },
-    { name: 'Sample Text', url: 'https://www.w3.org/TR/PNG/iso_8859-1.txt', type: 'txt' }
+    { name: 'Sample PDF', url: 'https://examplefile.com/document/pdf/sample1.pdf', type: 'pdf' },
+    { name: 'Sample Image', url: 'https://examplefile.com/image/png/sample1.png', type: 'png' },
+    { name: 'Sample Text', url: 'https://examplefile.com/document/txt/sample1.txt', type: 'txt' }
   ];
 
   return (

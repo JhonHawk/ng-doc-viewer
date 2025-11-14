@@ -181,17 +181,17 @@ export class AppComponent {
   documents = [
     {
       name: 'Sample PDF',
-      url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+      url: 'https://examplefile.com/document/pdf/sample1.pdf',
       type: 'pdf'
     },
     {
       name: 'Sample Image',
-      url: 'https://via.placeholder.com/800x600.png',
+      url: 'https://examplefile.com/image/png/sample1.png',
       type: 'png'
     },
     {
       name: 'Sample Text',
-      url: 'https://www.w3.org/TR/PNG/iso_8859-1.txt',
+      url: 'https://examplefile.com/document/txt/sample1.txt',
       type: 'txt'
     }
   ];

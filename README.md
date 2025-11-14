@@ -63,7 +63,7 @@ import { DocumentViewer } from 'universal-doc-viewer';
 
 const viewer = new DocumentViewer({
   container: '#viewer-container',
-  url: 'https://example.com/document.pdf',
+  url: 'https://examplefile.com/document/pdf/sample1.pdf',
   width: '100%',
   height: '800px'
 });
@@ -78,7 +78,7 @@ import { createViewer } from 'universal-doc-viewer';
 
 const viewer = await createViewer({
   container: '#viewer-container',
-  url: 'https://example.com/document.pdf'
+  url: 'https://examplefile.com/document/pdf/sample1.pdf'
 });
 ```
 
@@ -98,7 +98,7 @@ const viewer = await createViewer({
 
     const viewer = new DocumentViewer({
       container: '#viewer-container',
-      url: 'https://example.com/sample.pdf',
+      url: 'https://examplefile.com/document/pdf/sample1.pdf',
       height: '90vh'
     });
 
