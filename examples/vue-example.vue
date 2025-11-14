@@ -51,7 +51,7 @@ const documents = [
   },
   {
     name: 'Sample Image',
-    url: 'https://file-examples.com/storage/fe783befa4d1bd58bb72a02/2017/10/file_example_PNG_500kB.png',
+    url: 'https://via.placeholder.com/800x600.png',
     type: 'png'
   },
   {

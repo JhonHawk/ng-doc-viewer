@@ -128,7 +128,7 @@ new DocumentViewer({
 ```javascript
 const viewer = new DocumentViewer({
   container: '#viewer',
-  url: 'https://file-examples.com/storage/fe783befa4d1bd58bb72a02/2017/10/file_example_PNG_500kB.png',
+  url: 'https://via.placeholder.com/800x600.png',
   type: 'png'
 });
 await viewer.render();

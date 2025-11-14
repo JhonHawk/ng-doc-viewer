@@ -64,7 +64,7 @@ function App() {
 
   const documents = [
     { name: 'Sample PDF', url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', type: 'pdf' },
-    { name: 'Sample Image', url: 'https://file-examples.com/storage/fe783befa4d1bd58bb72a02/2017/10/file_example_PNG_500kB.png', type: 'png' },
+    { name: 'Sample Image', url: 'https://via.placeholder.com/800x600.png', type: 'png' },
     { name: 'Sample Text', url: 'https://www.w3.org/TR/PNG/iso_8859-1.txt', type: 'txt' }
   ];
 
