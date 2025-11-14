@@ -63,7 +63,7 @@ import { DocumentViewer } from 'universal-doc-viewer';
 
 const viewer = new DocumentViewer({
   container: '#viewer-container',
-  url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+  url: 'https://pdfobject.com/pdf/sample.pdf',
   width: '100%',
   height: '800px'
 });
@@ -78,7 +78,7 @@ import { createViewer } from 'universal-doc-viewer';
 
 const viewer = await createViewer({
   container: '#viewer-container',
-  url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf'
+  url: 'https://pdfobject.com/pdf/sample.pdf'
 });
 ```
 
@@ -98,7 +98,7 @@ const viewer = await createViewer({
 
     const viewer = new DocumentViewer({
       container: '#viewer-container',
-      url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+      url: 'https://pdfobject.com/pdf/sample.pdf',
       height: '90vh'
     });
 

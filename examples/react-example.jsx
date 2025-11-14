@@ -59,13 +59,13 @@ function DocumentViewerComponent({ url, type, height = '600px' }) {
 
 // Example App Component
 function App() {
-  const [documentUrl, setDocumentUrl] = useState('https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf');
+  const [documentUrl, setDocumentUrl] = useState('https://pdfobject.com/pdf/sample.pdf');
   const [documentType, setDocumentType] = useState('pdf');
 
   const documents = [
-    { name: 'Sample PDF', url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf', type: 'pdf' },
-    { name: 'Sample Image', url: 'https://via.placeholder.com/800x600.png', type: 'png' },
-    { name: 'Sample Text', url: 'https://www.w3.org/TR/PNG/iso_8859-1.txt', type: 'txt' }
+    { name: 'Sample PDF', url: 'https://pdfobject.com/pdf/sample.pdf', type: 'pdf' },
+    { name: 'Sample Image', url: 'https://download.samplelib.com/png/sample-boat-400x300.png', type: 'png' },
+    { name: 'Sample Text', url: 'https://example-files.online-convert.com/document/txt/example.txt', type: 'txt' }
   ];
 
   return (
