@@ -128,7 +128,7 @@ new DocumentViewer({
 ```javascript
 const viewer = new DocumentViewer({
   container: '#viewer',
-  url: 'https://examplefile.com/image/png/sample1.png',
+  url: 'https://file-examples.com/storage/fe783befa4d1bd58bb72a02/2017/10/file_example_PNG_500kB.png',
   type: 'png'
 });
 await viewer.render();
@@ -138,7 +138,7 @@ await viewer.render();
 ```javascript
 const viewer = new DocumentViewer({
   container: '#viewer',
-  url: 'https://examplefile.com/document/txt/sample1.txt',
+  url: 'https://www.w3.org/TR/PNG/iso_8859-1.txt',
   type: 'txt'
 });
 await viewer.render();
@@ -148,7 +148,7 @@ await viewer.render();
 ```javascript
 const viewer = new DocumentViewer({
   container: '#viewer',
-  url: 'https://examplefile.com/document/pdf/sample1.pdf',
+  url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
   type: 'pdf'
 });
 await viewer.render();

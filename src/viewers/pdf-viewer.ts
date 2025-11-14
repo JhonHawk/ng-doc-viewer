@@ -65,35 +65,14 @@ export class PDFViewer implements IViewer {
       return (window as any).pdfjsLib;
     }
 
-    // In browser environment, load from CDN directly
+    // In browser environment, prefer CDN loading
     if (typeof window !== 'undefined' && typeof document !== 'undefined') {
-      // Try to import from npm package (only works in bundled environments)
-      // Use a try-catch with timeout to avoid hanging
-      const importTimeout = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('Import timeout')), 100);
-      });
-
-      try {
-        const pdfjsLib = await Promise.race([
-          import('pdfjs-dist').catch(() => null),
-          importTimeout
-        ]);
-
-        if (pdfjsLib && (pdfjsLib as any).getDocument) {
-          // Successfully loaded from npm package
-          const workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-          (pdfjsLib as any).GlobalWorkerOptions.workerSrc = workerSrc;
-          return pdfjsLib;
-        }
-      } catch (e) {
-        // Import failed, will fall through to CDN loading
-      }
-
-      // Fall back to CDN for browser environments
+      // For browser environments without a bundler, load from CDN directly
+      // This is the most reliable approach for vanilla JS usage
       return this.loadPdfJsFromCDN();
     }
 
-    // For Node.js or non-browser environments, try npm package
+    // For Node.js or bundled environments, try npm package
     try {
       const pdfjsLib = await import('pdfjs-dist');
       const workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
