@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(git -C:*)",
+      "Bash(npm search:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm pack:*)"
     ],
     "deny": [],
     "ask": []

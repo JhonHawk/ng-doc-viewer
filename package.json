@@ -1,7 +1,8 @@
 {
-  "name": "universal-doc-viewer",
+  "name": "js-doc-viewer-universal",
   "version": "1.0.0",
   "description": "A framework-agnostic document viewer library for JavaScript and TypeScript supporting PDF, Office documents, images, and text files",
+  "type": "module",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
   "types": "dist/index.d.ts",
@@ -24,8 +25,16 @@
     "typescript",
     "javascript"
   ],
-  "author": "",
+  "author": "JhonHawk",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JhonHawk/ng-doc-viewer.git"
+  },
+  "homepage": "https://github.com/JhonHawk/ng-doc-viewer#readme",
+  "bugs": {
+    "url": "https://github.com/JhonHawk/ng-doc-viewer/issues"
+  },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-node-resolve": "^15.2.3",
